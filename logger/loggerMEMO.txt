@@ -1,0 +1,88 @@
+# To-Do
+"""
+1. ODPM logging - power rails
+2. ADB scripts - turnoff charging, fixing frequencies, limit charging level, change screen brightness, turn on/off cores, turn on/off apps
+3. Monitoring battery level
+4. 
+"""
+
+
+"""
+adb 
+
+adb root
+adb shell cat /sys/devices/platform/google,charger/charge_stop_level
+adb shell "echo 30 > /sys/devices/platform/google,charger/charge_stop_level"
+
+adb shell dumpsys battery set usb 1
+adb shell dumpsys battery set usb 0
+
+
+adb shell "echo 930000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq"
+adb shell "echo 930000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq"
+adb shell "echo 1024000 > /sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq"
+adb shell "echo 1024000 > /sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq"
+adb shell "echo 1106000 > /sys/devices/system/cpu/cpufreq/policy6/scaling_min_freq"
+adb shell "echo 1106000 > /sys/devices/system/cpu/cpufreq/policy6/scaling_max_freq"
+
+adb shell cat /sys/devices/platform/google,battery/power_supply/battery/voltage_now
+adb shell cat /sys/devices/platform/google,battery/power_supply/battery/capacity
+
+adb shell settings put system screen_brightness 158
+
+"""
+
+
+import os
+os.system("ls -l")
+
+from subprocess import call
+call(["ls", "-l"])
+
+import subprocess
+result = subprocess.run(['ls', '-l'], stdout=subprocess.PIPE)
+result.stdout.decode('utf-8')
+
+adb root
+
+adb shell dumpsys battery set usb 0
+
+adb shell "echo 930000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq"
+adb shell "echo 930000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq"
+adb shell "echo 1024000 > /sys/devices/system/cpu/cpufreq/policy4/scaling_min_freq"
+adb shell "echo 1024000 > /sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq"
+adb shell "echo 1106000 > /sys/devices/system/cpu/cpufreq/policy6/scaling_min_freq"
+adb shell "echo 1106000 > /sys/devices/system/cpu/cpufreq/policy6/scaling_max_freq"
+
+adb shell settings put system screen_brightness 158
+
+
+
+adb shell "echo 0 > /sys/devices/system/cpu/cpu1/online"
+adb shell "echo 0 > /sys/devices/system/cpu/cpu2/online"
+adb shell "echo 0 > /sys/devices/system/cpu/cpu3/online"
+
+adb shell "echo 1 > /sys/devices/system/cpu/cpu1/online"
+adb shell "echo 1 > /sys/devices/system/cpu/cpu2/online"
+adb shell "echo 1 > /sys/devices/system/cpu/cpu3/online"
+
+adb shell "echo 300000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq"
+adb shell "echo 300000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq"
+
+
+
+# adb pull /data/misc/perfetto-traces/trace
+
+
+# adb shell 'pm list packages' | sed 's/.*://g'
+
+
+# adb shell am start package:com.sqzsoft.freeheater
+
+
+# ActivityMain
+
+
+adb shell am start -n com.sqzsoft.freeheater/com.sqzsoft.freeheater.ActivityMain
+adb shell input tap 290 2085
+adb shell input tap 790 2085
