@@ -17,7 +17,7 @@ little_max_freq = 1803000
 mid_max_freq = 2253000
 big_max_freq = 2802000 
 
-trial = 5
+trial = 2
 
 def uniquify(path):
     filename, extension = os.path.splitext(path)
@@ -213,10 +213,10 @@ def get_battery_resistance():
 
 
 def save_pickle(fileName, value):
-    with open('fileName'+'pkl', 'wb') as f:
+    with open(fileName+'.pkl', 'wb') as f:
     	pickle.dump(value, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-def tester(target_freq, core):
+def tester(target_freq, core, targetBatteryLevel):
     while True:
         battery_level = get_battery_level()
         print(battery_level)
@@ -235,6 +235,9 @@ def tester(target_freq, core):
         if battery_level == targetBatteryLevel:
             break
         sleep(30)
+
+    """ fully unplug usb charging """
+    set_limit_battery_level(targetBatteryLevel-4)
 
     """ first try: turn on core """
     turn_on_screen()
@@ -295,20 +298,22 @@ def tester(target_freq, core):
     turn_off_heater()
     turn_off_screen()
 
+    set_limit_battery_level(targetBatteryLevel)
+
 set_root()
 
 set_brightness(158)
 
 # for targetBatteryLevel in np.arange(5,101,5)[::-1]:
-for targetBatteryLevel in [97,98,99,100][::-1]:
+for targetBatteryLevel in [90, 95,100][::-1]:
     set_limit_battery_level(targetBatteryLevel)
     limit_battery_level = get_limit_battery_level()
     print(limit_battery_level)
 
     for i in range(trial):
         for little_freq in little_available_frequencies:
-            tester(little_freq, "little")
+            tester(little_freq, "little", targetBatteryLevel)
         for mid_freq in mid_available_frequencies:
-            tester(mid_freq, "mid")
+            tester(mid_freq, "mid", targetBatteryLevel)
         for big_freq in big_available_frequencies:
-            tester(big_freq, "big")
+            tester(big_freq, "big", targetBatteryLevel)
