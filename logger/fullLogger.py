@@ -197,10 +197,10 @@ def get_battery_voltage():
     msg = 'adb shell cat /sys/class/power_supply/battery/voltage_now'
     result = subprocess.run(msg.split(), stdout=subprocess.PIPE)
     voltage_now = int(result.stdout.decode('utf-8'))
-    msg = 'adb shell cat /sys/class/power_supply/battery/voltage_avg'
+    msg = 'adb shell cat /sys/class/power_supply/battery/voltage_ocv'
     result = subprocess.run(msg.split(), stdout=subprocess.PIPE)
-    voltage_avg = int(result.stdout.decode('utf-8'))
-    return [voltage_now, voltage_avg]
+    voltage_ocv = int(result.stdout.decode('utf-8'))
+    return [voltage_now, voltage_ocv]
 
 def get_battery_resistance():
     msg = 'adb shell cat /sys/class/power_supply/battery/resistance'
@@ -227,15 +227,18 @@ def tester(target_freq, core, targetBatteryLevel):
             turn_on_heater("medium")
             print("battery_level > targetBatteryLevel")
         elif battery_level < targetBatteryLevel:
+            set_brightness(1)
             turn_on_usb_charging()
             turn_on_screen()
             turn_off_heater()
             turn_off_screen()
-            print("battery_level < targetBatteryLevel")
+            print("battery_level < targetBatteryLevel, sleep 1m for charging")
+            sleep(60)
         if battery_level == targetBatteryLevel:
             break
         sleep(30)
 
+    set_brightness(158)
     """ fully unplug usb charging """
     set_limit_battery_level(targetBatteryLevel-4)
 
