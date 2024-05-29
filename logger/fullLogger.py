@@ -39,6 +39,10 @@ def set_limit_battery_level(level):
     msg = 'adb shell "echo '+str(level)+' > /sys/devices/platform/google,charger/charge_stop_level"'
     subprocess.Popen(msg, shell=True, stdout=subprocess.PIPE).stdout.read()
 
+def set_charge_start_level(level):
+    msg = 'adb shell "echo '+str(level)+' > /sys/devices/platform/google,charger/charge_start_level"'
+    subprocess.Popen(msg, shell=True, stdout=subprocess.PIPE).stdout.read()
+
 def get_limit_battery_level():
     msg = 'adb shell cat /sys/devices/platform/google,charger/charge_stop_level'
     result = subprocess.run(msg.split(), stdout=subprocess.PIPE)
@@ -50,11 +54,13 @@ def get_battery_level():
     return int(result.stdout.decode('utf-8'))
 
 def turn_off_usb_charging():
-    msg = 'adb shell dumpsys battery set usb 0'
+    # msg = 'adb shell dumpsys battery set usb 0'
+    msg = 'adb shell dumpsys battery unplug'
     subprocess.run(msg.split(), stdout=subprocess.PIPE)
 
 def turn_on_usb_charging():
-    msg = 'adb shell dumpsys battery set usb 1'
+    # msg = 'adb shell dumpsys battery set usb 1'
+    msg = 'adb shell dumpsys battery reset'
     subprocess.run(msg.split(), stdout=subprocess.PIPE)
 
 def turn_on_screen():
@@ -228,11 +234,13 @@ def tester(target_freq, core, targetBatteryLevel):
             print("battery_level > targetBatteryLevel")
         elif battery_level < targetBatteryLevel:
             set_brightness(1)
+            set_charge_start_level(battery_level-1)
+            set_charge_start_level(battery_level)
             turn_on_usb_charging()
             turn_on_screen()
             turn_off_heater()
             turn_off_screen()
-            print("battery_level < targetBatteryLevel, sleep 1m for charging")
+            print("battery_level < targetBatteryLevel, sleep 5m for charging")
             sleep(60)
         if battery_level == targetBatteryLevel:
             break
@@ -308,7 +316,7 @@ set_root()
 set_brightness(158)
 
 # for targetBatteryLevel in np.arange(5,101,5)[::-1]:
-for targetBatteryLevel in [90, 95,100][::-1]:
+for targetBatteryLevel in [70, 75, 80, 85][::-1]:
     set_limit_battery_level(targetBatteryLevel)
     limit_battery_level = get_limit_battery_level()
     print(limit_battery_level)
