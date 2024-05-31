@@ -5,6 +5,7 @@ import random
 import numpy as np
 import pickle
 
+# little_available_frequencies = [300000, 1803000]
 little_available_frequencies = [300000, 574000, 738000, 930000, 1098000, 1197000, 1328000, 1401000, 1598000, 1704000, 1803000]
 mid_available_frequencies = [400000, 553000, 696000, 799000, 910000, 1024000, 1197000, 1328000, 1491000, 1663000, 1836000, 1999000, 2130000, 2253000]
 big_available_frequencies = [500000, 851000, 984000, 1106000, 1277000, 1426000, 1582000, 1745000, 1826000, 2048000, 2188000, 2252000, 2401000, 2507000, 2630000, 2704000, 2802000]
@@ -224,14 +225,20 @@ def save_pickle(fileName, value):
 
 def tester(target_freq, core, targetBatteryLevel):
     while True:
+
+        set_limit_battery_level(targetBatteryLevel)
+        limit_battery_level = get_limit_battery_level()
         battery_level = get_battery_level()
-        print(battery_level)
+        set_charge_start_level(0)
+        print(limit_battery_level, battery_level)
 
         if battery_level > targetBatteryLevel:
             turn_off_usb_charging()
             turn_on_screen()
             turn_on_heater("medium")
             print("battery_level > targetBatteryLevel")
+            sleep(30)
+            turn_off_heater()
         elif battery_level < targetBatteryLevel:
             set_brightness(1)
             set_charge_start_level(battery_level-1)
@@ -240,12 +247,13 @@ def tester(target_freq, core, targetBatteryLevel):
             turn_on_screen()
             turn_off_heater()
             turn_off_screen()
-            print("battery_level < targetBatteryLevel, sleep 5m for charging")
+            print("battery_level < targetBatteryLevel, sleep 1m for charging")
             sleep(60)
+            continue
         if battery_level == targetBatteryLevel:
             break
-        sleep(30)
-
+        
+    sleep(60)
     set_brightness(158)
     """ fully unplug usb charging """
     set_limit_battery_level(targetBatteryLevel-4)
@@ -315,8 +323,8 @@ set_root()
 
 set_brightness(158)
 
-# for targetBatteryLevel in np.arange(5,101,5)[::-1]:
-for targetBatteryLevel in [70, 75, 80, 85][::-1]:
+for targetBatteryLevel in np.arange(10,101,10)[::-1]:
+# for targetBatteryLevel in [70, 75, 80, 85][::-1]:
     set_limit_battery_level(targetBatteryLevel)
     limit_battery_level = get_limit_battery_level()
     print(limit_battery_level)
